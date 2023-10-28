@@ -54,30 +54,74 @@ up_frcst <- function(id) {
 
 # SERVER ----
 sp_frcst <- function(id,
-                     year,
-                     week) {
+                     data,
+                     shp) {
+    # Control de elementos reactivos
+    stopifnot(is.reactive(data))
+    stopifnot(is.reactive(shp))
     moduleServer(
         id,
         function(input, output, session) {
-            # Gráfico de pronóstico de eventos ----
-            output$frcst <- renderUI({
-                p(bs_icon("graph-up"), " Gráfico")
+            ## Filtrar y generar información ----
+
+            # Filtrar a nivel de distrito
+            var_depa <- sc_filter(
+                id = "depa",
+                data = data,
+                variable = "departamento"
+            )
+            var_prov <- sc_filter(
+                id = "prov",
+                data = var_depa$data,
+                variable = "provincia"
+            )
+            var_dist <- sc_filter(
+                id = "dist",
+                data = var_prov$data,
+                variable = "distrito"
+            )
+
+            # Base de modelamiento
+            db_model <- eventReactive(input$run, {
+                var_dist$data()
             })
 
-            # Indicador ----
-            output$kpi <- renderUI({
-                p(bs_icon("info-circle"), " Información")
+            # Base del mapa
+            db_map <- eventReactive(input$run, {
+                # Filtros
+                f_depa <- var_depa$input()
+                f_prov <- var_prov$input()
+                f_dist <- var_dist$input()
+                # Polígonos
+                s_depa <- shp()$s_depa |> filter(departamen == f_depa)
+                s_prov <- shp()$s_prov |> filter(departamen == f_depa)
+                s_dist <- shp()$s_dist |>
+                    filter(departamen == f_depa) |>
+                    mutate(value = if_else(distrito == f_dist, 1, 0))
+                # Salidas
+                list(
+                    s_depa = s_depa,
+                    s_prov = s_prov,
+                    s_dist = s_dist
+                )
             })
 
-            # Tabla de resumen ----
-            output$table <- renderUI({
-                p(bs_icon("table"), " Tabla")
+            ## Mapa de ubicación ----
+            sc_graph_map(
+                id = "map",
+                data = db_map,
+                font_size = 0
+            )
+
+            ## Tabla de resumen ----
+            output$table <- renderReactable({
+                db_model() |>
+                    collect() |>
+                    reactable()
             })
 
-            # Gráfico de condiciones climáticas ----
-            output$clima <- renderUI({
-                p(bs_icon("cloud-sun"), " Gráfico")
-            })
+            ## TEST ----
+            output$pruebas <- renderPrint(db_map())
         }
     )
 }
