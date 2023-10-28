@@ -1,17 +1,18 @@
 # LIBRERIAS ----
 
-# library(markdown)
+library(markdown)
 
 # library(glue)
 # library(aweek)
 library(lubridate, warn.conflicts = FALSE)
 
-# library(arrow, warn.conflicts = FALSE)
-# library(dplyr, warn.conflicts = FALSE)
+library(arrow, warn.conflicts = FALSE)
+library(sf)
+library(dplyr, warn.conflicts = FALSE)
 
 # library(shinyWidgets)
-# library(reactable)
-# library(echarts4r)
+library(reactable)
+library(echarts4r)
 library(bsicons)
 library(bslib, warn.conflicts = FALSE)
 library(shiny)
@@ -37,7 +38,7 @@ if (wday(fecha_actual) <= 3) {
 # Tema app
 app_theme <- bs_theme(
     primary = "#385C91",
-    bootswatch = "flatly"
+    bootswatch = "journal"
 )
 
 # UI ----
@@ -46,28 +47,26 @@ ui <- page_navbar(
     # Módulo de pronóstico de eventos
     nav_panel(
         up_frcst(id = "forecast"),
-        title = "Pronóstico",
-        value = "pronostico"
+        title = "Tablero"
     ),
     # Acerca
-    # nav_panel(
-    #     layout_columns(
-    #         col_widths = c(-2, 8),
-    #         withMathJax(includeMarkdown("./Acerca.md"))
-    #     ),
-    #     title = "Acerca",
-    #     icon = bs_icon("info-circle-fill")
-    # ),
-    # Logo
-    # nav_spacer(),
-    # nav_item(
-    #     a(
-    #         href = "https://www.dge.gob.pe/portalnuevo/",
-    #         class = "p-0",
-    #         style = "height: 40px;",
-    #         img(src = "cdc_48px.png", height = "40")
-    #     )
-    # ),
+    nav_panel(
+        layout_columns(
+            col_widths = c(-2, 8),
+            withMathJax(includeMarkdown("./Acerca.md"))
+        ),
+        title = "Acerca",
+        icon = bs_icon("info-circle-fill")
+    ),
+    # Github
+    nav_spacer(),
+    nav_item(
+        a(
+            icon("github"),
+            href = "https://github.com/rumichaska/tablero_dataton",
+            class = "p-0",
+        )
+    ),
     title = "DENGUE DATATON",
     padding = 0,
     inverse = FALSE,
@@ -80,8 +79,25 @@ ui <- page_navbar(
 # SERVER ----
 
 server <- function(input, output, session) {
+    ## Data ----
+
+    # Información de modelamiento
+    db <- reactive({
+        read_parquet("./data/processed/shiny_data.parquet", as_data_frame = FALSE)
+    })
+
+    # Información de límites político-administrativos
+    shp <- reactive({
+        # Salidas
+        list(
+            s_depa = st_read("./data/geo/geo_peru.gpkg", layer = "departamento"),
+            s_prov = st_read("./data/geo/geo_peru.gpkg", layer = "provincia"),
+            s_dist = st_read("./data/geo/geo_peru.gpkg", layer = "distrito")
+        )
+    })
+
     ## Dashboard: Diresa ----
-    sp_frcst(id = "forecast", year = year, week = week)
+    sp_frcst(id = "forecast", data = db, shp = shp)
 }
 
 # APP ---------------------------------------------------------------------
