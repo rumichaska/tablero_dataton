@@ -10,10 +10,20 @@ up_frcst <- function(id) {
         # Sidebar panel
         sidebar = sidebar(
             title = "Parámetros de interés",
-            selectInput(
-                inputId = ns("enfermedad"),
-                label = tags$b("Enfermedad"),
-                choices = c("..." = "", "DENGUE")
+            uc_filter(
+                id = ns("depa"),
+                label = "Departamento:",
+                width = "auto"
+            ),
+            uc_filter(
+                id = ns("prov"),
+                label = "Provincia:",
+                width = "auto"
+            ),
+            uc_filter(
+                id = ns("dist"),
+                label = "Distrito:",
+                width = "auto"
             ),
             actionButton(
                 inputId = ns("run"),
@@ -25,49 +35,17 @@ up_frcst <- function(id) {
         ),
         # Main panel
         layout_columns(
+            uc_graph_single(id = ns("model")),
+            uc_graph_map(id = ns("map")),
             card(
-                card_header("Gráfico de pronóstico de eventos"),
-                card_body(
-                    htmlOutput(outputId = ns("frcst")),
-                    class = "align-items-center fs-1",
-                    fill = FALSE
-                )
-            ),
-            card(
-                card_header("Indicador"),
-                card_body(
-                    htmlOutput(outputId = ns("kpi")),
-                    class = "align-items-center fs-1",
-                    fill = FALSE
-                )
+                card_header("Métricas de modelamiento"),
+                card_body(reactableOutput(outputId = ns("table"))),
+                card_body(verbatimTextOutput(outputId = ns("pruebas")))
             ),
             col_widths = breakpoints(
                 sm = 12,
                 md = 12,
-                lg = c(8, 4)
-            )
-        ),
-        layout_columns(
-            card(
-                card_header("Tabla de resumen"),
-                card_body(
-                    htmlOutput(outputId = ns("table")),
-                    class = "align-items-center fs-1",
-                    fill = FALSE
-                )
-            ),
-            card(
-                card_header("Gráfico de condiciones climáticas"),
-                card_body(
-                    htmlOutput(outputId = ns("clima")),
-                    class = "align-items-center fs-1",
-                    fill = FALSE
-                )
-            ),
-            col_widths = breakpoints(
-                sm = 12,
-                md = 12,
-                lg = c(5, 7)
+                lg = c(12, 5, 7)
             )
         ),
         fillable = TRUE
