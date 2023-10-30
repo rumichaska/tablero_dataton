@@ -51,3 +51,4 @@ rsconnect/
 # Project directories and files
 /docs/
 /test/
+/output/
