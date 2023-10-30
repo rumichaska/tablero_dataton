@@ -2,23 +2,19 @@
 
 library(markdown)
 
-# library(glue)
-# library(aweek)
+library(glue)
 library(lubridate, warn.conflicts = FALSE)
 
 library(sf)
 library(arrow, warn.conflicts = FALSE)
 library(dplyr, warn.conflicts = FALSE)
 
-# library(shinyWidgets)
+library(shinyWidgets)
 library(reactable)
 library(echarts4r)
 library(bsicons)
 library(bslib, warn.conflicts = FALSE)
 library(shiny)
-
-## Funciones del aplicativo ----
-# source("./src/util.R")
 
 # nolint start: object_usage_linter.
 
@@ -36,10 +32,7 @@ if (wday(fecha_actual) <= 3) {
 }
 
 # Tema app
-app_theme <- bs_theme(
-    # primary = "#385C91",
-    bootswatch = "journal"
-)
+app_theme <- bs_theme(bootswatch = "litera")
 
 # UI ----
 
@@ -86,6 +79,10 @@ server <- function(input, output, session) {
         read_parquet("./data/processed/shiny_data.parquet", as_data_frame = FALSE)
     })
 
+    mt <- reactive({
+        read_parquet("./data/processed/shiny_metricas.parquet", as_data_frame = FALSE)
+    })
+
     # Información de límites político-administrativos
     shp <- reactive({
         # Salidas
@@ -97,7 +94,7 @@ server <- function(input, output, session) {
     })
 
     ## Dashboard: Diresa ----
-    sp_frcst(id = "forecast", data = db, shp = shp)
+    sp_frcst(id = "forecast", data = db, metrics = mt, shp = shp)
 }
 
 # APP ---------------------------------------------------------------------

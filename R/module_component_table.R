@@ -5,16 +5,7 @@
 #' Interface de tablas
 #'
 #' @param id Identificador del módulo
-#' @param sb Parámetro {choices} del `radioButtons()` del `sidebar()` del
-#' módulo, debe ser ingresado como: `c("etiqueta1" = 1, "etiqueta2" = 2, ...)`
-#' @param sl Parámetro {label} del `radioButtons()` del `sidebar()`
-#' @param sd Parámetro de la opción seleccionada por defecto del `radioButtons()`
-#' del `sidebar()` del módulo
-#' @param rb Parámetro {choices} de opciones del `radioButtons()` del `card_body()`
-#' del módulo debe ser ingresado como: `c("etiqueta1" = 1, "etiqueta2" = 2, ...)`
-#' @param rd Parámetro de la opción seleccionada por defecto del `radioButtons()`
-#' del `card_body()` del módulo
-#' @return Card para los gráficos de resumen
+#' @return Card para la tabla de resumen
 uc_table <- function(id) {
     # Namespace
     ns <- NS(id)

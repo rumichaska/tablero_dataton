@@ -36,13 +36,13 @@ up_frcst <- function(id) {
         # Main panel
         layout_columns(
             uc_graph_single(id = ns("model")),
-            card("Métricas"),
+            uc_graph_single(id = ns("metrics")),
             uc_graph_map(id = ns("map")),
             uc_table(id = ns("table")),
             col_widths = breakpoints(
                 sm = 12,
                 md = 12,
-                lg = c(10, 2, 5, 7)
+                lg = c(8, 4, 5, 7)
             ),
             row_heights = c(6)
         ),
@@ -53,13 +53,17 @@ up_frcst <- function(id) {
 # SERVER ----
 sp_frcst <- function(id,
                      data,
+                     metrics,
                      shp) {
     # Control de elementos reactivos
     stopifnot(is.reactive(data))
+    stopifnot(is.reactive(metrics))
     stopifnot(is.reactive(shp))
     moduleServer(
         id,
         function(input, output, session) {
+            req(data, metrics, shp)
+
             ## Filtrar y generar información ----
 
             # Filtrar a nivel de distrito
@@ -81,11 +85,38 @@ sp_frcst <- function(id,
 
             # Base de modelamiento
             db_model <- eventReactive(input$run, {
-                var_dist$data() |> collect()
+                # Información
+                db_in <- var_dist$data() |>
+                    collect()
+                # Semana de corte de train | test
+                date <- max(db_in$fecha[db_in$fuente == "train"], na.rm = TRUE)
+                c <- paste(epiyear(date), epiweek(date), sep = "-")
+                # Formato ancho
+                db <- db_in |>
+                    tidyr::pivot_wider(
+                        names_from = fuente,
+                        values_from = c(casos, pronostico)
+                    )
+                # Salidas
+                list(data = db, cut = c)
+            })
+
+            # Base de métricas del modelamiento
+            db_metrics <- eventReactive(input$run, {
+                req(var_depa$input(), var_prov$input(), var_dist$input())
+                # Variables del modelo
+                metrics() |>
+                    filter(
+                        departamento == var_depa$input(),
+                        provincia == var_prov$input(),
+                        distrito == var_dist$input()
+                    ) |>
+                    collect()
             })
 
             # Base del mapa
             db_map <- eventReactive(input$run, {
+                req(var_depa$input(), var_prov$input(), var_dist$input())
                 # Filtros
                 f_depa <- var_depa$input()
                 f_prov <- var_prov$input()
@@ -107,7 +138,8 @@ sp_frcst <- function(id,
             # Base de la tabla
             db_table <- eventReactive(input$run, {
                 # Selección de variables
-                db <- db_model() |>
+                db <- var_dist$data() |>
+                    collect() |>
                     select(
                         ubigeo,
                         departamento,
@@ -123,10 +155,34 @@ sp_frcst <- function(id,
                 return(db)
             })
 
+            ## Alertas ----
+
+            # Alerta cuando no se seleccionan todas las variables de los filtros
+            observeEvent(input$run, {
+                # Condición para lanzar alerta
+                con <- var_depa$input() == "" | var_prov$input() == "" | var_dist$input() == ""
+                # Alerta cuando se cumple la condición
+                if (con) {
+                    sendSweetAlert(
+                        session = session,
+                        title = "Hay un problema!",
+                        text = "Debe seleccionar departamento, provincia y distrito",
+                        type = "error"
+                    )
+                }
+            })
+
             ## Gráfico de modelamiento ----
             sc_graph_model(
                 id = "model",
                 data = db_model,
+                font_size = 0
+            )
+
+            ## Métricas de modelamiento ----
+            sc_graph_metrics(
+                id = "metrics",
+                data = db_metrics,
                 font_size = 0
             )
 
@@ -145,7 +201,7 @@ sp_frcst <- function(id,
             )
 
             ## TEST ----
-            # output$pruebas <- renderPrint(db_map())
+            output$pruebas <- renderPrint(db_model())
         }
     )
 }

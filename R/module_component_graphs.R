@@ -86,7 +86,7 @@ uc_graph_map <- function(id) {
 #' @param data Información de ingreso, debe ser un elemento reactivo
 #' @param font_size Incremento del tamaño base de {fontSize} de los gráficos,
 #' el valor por defecto es de 2
-#' @return Gráfico interactivo
+#' @return Gráfico de modelamiento con train y test data
 sc_graph_model <- function(id,
                            data,
                            font_size = 2) {
@@ -97,18 +97,19 @@ sc_graph_model <- function(id,
         function(input, output, session) {
             req(data)
 
-            # Título de gráfico
-            g_title <- eventReactive(data(), {
-                t <- "Gráfico de modelamiento (provisional)"
-            })
+            # Tema del aplicativo
+            c_theme <- bs_get_variables(
+                theme = bs_current_theme(),
+                varnames = c("danger", "yellow", "dark", "gray-500", "primary")
+            )
 
             # Gráfico
             grp <- eventReactive(data(), {
-                data() |>
-                    group_by(fuente) |>
+                data()$data |>
+                    arrange(axis) |>
                     e_charts(x = axis) |>
                     e_title(
-                        g_title(),
+                        text = "Modelamiento de dengue",
                         textStyle = list(
                             fontWeight = "bold",
                             fontSize = 16 + font_size
@@ -126,7 +127,6 @@ sc_graph_model <- function(id,
                     ) |>
                     e_legend(
                         top = 30,
-                        # selected = list("Acumulado" = FALSE),
                         textStyle = list(
                             fontWeight = "normal",
                             fontSize = 10 + font_size
@@ -135,7 +135,6 @@ sc_graph_model <- function(id,
                     e_grid(
                         left = "5%",
                         top = 80,
-                        right = "7%",
                         bottom = 60
                     ) |>
                     e_x_axis(
@@ -156,6 +155,7 @@ sc_graph_model <- function(id,
                         splitLine = list(show = FALSE)
                     ) |>
                     e_y_axis(
+                        name = "Casos",
                         axisLine = list(show = TRUE),
                         axisTick = list(show = TRUE),
                         axisLabel = list(
@@ -172,29 +172,39 @@ sc_graph_model <- function(id,
                         )
                     ) |>
                     e_line(
-                        name = "Casos",
-                        serie = casos,
-                        itemStyle = list(color = "#000000")
+                        serie = casos_test,
+                        name = "Casos test",
+                        itemStyle = list(color = c_theme[[1]])
                     ) |>
                     e_line(
-                        name = "Pronóstico",
-                        serie = pronostico,
-                        itemStyle = list(color = "#E74C3C")
+                        serie = casos_train,
+                        name = "Casos train",
+                        itemStyle = list(color = c_theme[[2]])
                     ) |>
-                    # e_mark_line(
-                    #     silent = TRUE,
-                    #     label = list(
-                    #         color = "inherit",
-                    #         fontWeight = "normal",
-                    #         fontSize = 10 + font_size
-                    #     ),
-                    #     data = list(
-                    #         xAxis = as.character(week()),
-                    #         lineStyle = list(color = "#0F4164")
-                    #     ),
-                    #     title = "Semana de\nAnálisis",
-                    #     animation = FALSE
-                    # ) |>
+                    e_line(
+                        serie = pronostico_test,
+                        name = "Pronóstico test",
+                        itemStyle = list(color = c_theme[[3]])
+                    ) |>
+                    e_line(
+                        serie = pronostico_train,
+                        name = "Pronóstico train",
+                        itemStyle = list(color = c_theme[[4]])
+                    ) |>
+                    e_mark_line(
+                        silent = TRUE,
+                        label = list(
+                            color = "inherit",
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        ),
+                        data = list(
+                            xAxis = data()$cut,
+                            lineStyle = list(color = c_theme[[5]])
+                        ),
+                        title = "Corte",
+                        animation = FALSE
+                    ) |>
                     e_toolbox_feature(feature = "saveAsImage", title = "png")
             })
 
@@ -205,6 +215,114 @@ sc_graph_model <- function(id,
         }
     )
 }
+
+#' Server del gráfico de las métricas del modelo
+#'
+#' @param id Identificador del módulo
+#' @param data Información vectorial de ingreso, debe ser un elemento reactivo
+#' @return Gráfico de las métricas del modelo seleccionado
+sc_graph_metrics <- function(id,
+                             data,
+                             font_size = 2) {
+    # Control de elementos reactivos
+    stopifnot(is.reactive(data))
+    moduleServer(
+        id,
+        function(input, output, session) {
+            req(data)
+
+            # Tema del aplicativo
+            c_theme <- bs_get_variables(
+                theme = bs_current_theme(),
+                varnames = c("primary")
+            )
+
+            # Título de gráfico
+            g_title <- eventReactive(data(), {
+                d <- unique(data()$modelo)
+                t <- "Importancia de las variables"
+                s <- glue("Modelo usado: {d}")
+                # Salidas
+                list(title = t, subtitle = s)
+            })
+
+            # Gráfico
+            grp <- eventReactive(data(), {
+                data() |>
+                    e_charts(x = variable) |>
+                    e_title(
+                        text = g_title()$title,
+                        subtext = g_title()$subtitle,
+                        textStyle = list(
+                            fontWeight = "bold",
+                            fontSize = 16 + font_size
+                        ),
+                        subtextStyle = list(
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        )
+                    ) |>
+                    e_title(
+                        subtext = "Dataton - MINSA",
+                        subtextStyle = list(
+                            fontStyle = "italic",
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        ),
+                        left = "5%",
+                        bottom = 0
+                    ) |>
+                    e_legend(show = FALSE) |>
+                    e_grid(
+                        top = 45,
+                        bottom = 20,
+                        containLabel = TRUE
+                    ) |>
+                    e_x_axis(
+                        type = "category",
+                        axisLine = list(show = TRUE),
+                        axisTick = list(alignWithLabel = TRUE),
+                        axisLabel = list(
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        ),
+                        splitLine = list(show = FALSE)
+                    ) |>
+                    e_y_axis(
+                        axisLabel = list(
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        )
+                    ) |>
+                    e_tooltip(
+                        trigger = "axis",
+                        axisPointer = list(
+                            type = "line",
+                            axis = "y",
+                            label = list(show = TRUE)
+                        ),
+                        textStyle = list(
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        )
+                    ) |>
+                    e_bar(
+                        serie = score,
+                        name = "Score",
+                        itemStyle = list(color = c_theme[[1]])
+                    ) |>
+                    e_flip_coords() |>
+                    e_toolbox_feature(feature = "saveAsImage", title = "png")
+            })
+
+            # Render de gráfico
+            output$echart <- renderEcharts4r({
+                grp()
+            })
+        }
+    )
+}
+
 
 
 #' Server del gráfico de mapa distrital
@@ -221,6 +339,12 @@ sc_graph_map <- function(id,
         id,
         function(input, output, session) {
             req(data)
+
+            # Tema del aplicativo
+            c_theme <- bs_get_variables(
+                theme = bs_current_theme(),
+                varnames = c("white", "danger")
+            )
 
             # Gráfico
             grp <- eventReactive(data(), {
@@ -239,7 +363,8 @@ sc_graph_map <- function(id,
                         filter(value == 1) |>
                         pull(distrito)
                     t <- "Mapa de ubicación"
-                    s <- glue::glue("Distrito: {d}")
+                    s <- glue("Distrito: {d}")
+                    # Salidas
                     list(title = t, subtitle = s, dist = d)
                 })
 
@@ -284,7 +409,6 @@ sc_graph_map <- function(id,
                     e_map(
                         serie = value,
                         map = "distrito",
-                        # name = "Distrito:",
                         roam = FALSE,
                         aspectScale = 1,
                         nameProperty = "distrito",
@@ -303,8 +427,8 @@ sc_graph_map <- function(id,
                         serie = value,
                         type = "piecewise",
                         pieces = list(
-                            list(value = 0, label = "Otros", color = "#FFFFFF"),
-                            list(value = 1, label = g_title()$dist, color = "#B13000")
+                            list(value = 0, color = c_theme[[1]]),
+                            list(value = 1, color = c_theme[[2]])
                         ),
                         show = FALSE
                     ) |>
