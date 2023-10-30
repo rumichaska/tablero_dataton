@@ -7,6 +7,22 @@ library(dplyr, warn.conflicts = FALSE)
 
 # UTILIDADES ----
 
+# Función limpieza
+clean_ubigeo <- function(.data, type = NULL) {
+    d <- .data |>
+        mutate(
+            ubigeo = as.character(ubigeo),
+            ubigeo = case_when(
+                nchar(ubigeo) == 5 ~ paste0(strrep("0", 1), ubigeo),
+                .default = ubigeo
+            )
+        )
+    if (!is.null(type)) {
+        d <- d |> mutate(fuente = type)
+    }
+    return(d)
+}
+
 # Información de ubigeos (Fuente: INEI 2018)
 db_ubigeo <- readRDS("./data/geo/ubigeo_18.rds")
 
@@ -15,42 +31,32 @@ db_ubigeo <- readRDS("./data/geo/ubigeo_18.rds")
 # Listado de archivos de modelamiento
 test_files <- list.files(path = "./data/raw", pattern = "test.csv", full.names = TRUE)
 train_files <- list.files(path = "./data/raw", pattern = "train.csv", full.names = TRUE)
+metric_files <- list.files(path = "./data/raw", pattern = "variables.csv", full.names = TRUE)
 
 # Union de archivos
 db_test <- c()
 for (file in test_files) {
-    db_in <- read_csv_arrow(file) |>
-        mutate(
-            ubigeo = as.character(ubigeo),
-            ubigeo = case_when(
-                nchar(ubigeo) == 5 ~ paste0(strrep("0", 1), ubigeo),
-                .default = ubigeo
-            ),
-            fuente = "test"
-        )
+    db_in <- read_csv_arrow(file) |> clean_ubigeo("test")
     db_test <- rbind(db_test, db_in)
 }
 db_train <- c()
 for (file in train_files) {
-    db_in <- read_csv_arrow(file) |>
-        mutate(
-            ubigeo = as.character(ubigeo),
-            ubigeo = case_when(
-                nchar(ubigeo) == 5 ~ paste0(strrep("0", 1), ubigeo),
-                .default = ubigeo
-            ),
-            fuente = "train"
-        )
+    db_in <- read_csv_arrow(file) |> clean_ubigeo("train")
     db_train <- rbind(db_train, db_in)
 }
+db_metric <- c()
+for (file in metric_files) {
+    db_in <- read_csv_arrow(file) |> clean_ubigeo()
+    db_metric <- rbind(db_metric, db_in)
+}
 
-# Union de bases
+# Union de bases de entrenamiento y validación
 db_model <- rbind(db_test, db_train)
 
 # DATA WRANGLING ----
 
 # Información de ubigeo y semana epidemiológica
-db_clean <- db_model |>
+db_model_clean <- db_model |>
     select(-distrito) |>
     mutate(
         year = year(fecha),
@@ -61,5 +67,10 @@ db_clean <- db_model |>
     left_join(db_ubigeo, by = join_by(ubigeo)) |>
     relocate(year, epiweek, .after = fecha)
 
+db_metric_clean <- db_metric |>
+    left_join(db_ubigeo, by = join_by(ubigeo)) |>
+    select(-ano_ref)
+
 # EXPORTACION ----
-write_parquet(db_clean, "./data/processed/shiny_data.parquet")
+write_parquet(db_model_clean, "./data/processed/shiny_data.parquet")
+write_parquet(db_metric_clean, "./data/processed/shiny_metricas.parquet")
