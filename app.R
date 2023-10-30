@@ -6,8 +6,8 @@ library(markdown)
 # library(aweek)
 library(lubridate, warn.conflicts = FALSE)
 
-library(arrow, warn.conflicts = FALSE)
 library(sf)
+library(arrow, warn.conflicts = FALSE)
 library(dplyr, warn.conflicts = FALSE)
 
 # library(shinyWidgets)
@@ -37,7 +37,7 @@ if (wday(fecha_actual) <= 3) {
 
 # Tema app
 app_theme <- bs_theme(
-    primary = "#385C91",
+    # primary = "#385C91",
     bootswatch = "journal"
 )
 

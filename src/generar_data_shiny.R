@@ -54,7 +54,9 @@ db_clean <- db_model |>
     select(-distrito) |>
     mutate(
         year = year(fecha),
-        epiweek = epiweek(fecha)
+        epiweek = as.character(epiweek(fecha)),
+        epiweek = if_else(nchar(epiweek) == 1, paste0("0", epiweek), epiweek),
+        axis = paste(year, epiweek, sep = "-")
     ) |>
     left_join(db_ubigeo, by = join_by(ubigeo)) |>
     relocate(year, epiweek, .after = fecha)

@@ -36,17 +36,15 @@ up_frcst <- function(id) {
         # Main panel
         layout_columns(
             uc_graph_single(id = ns("model")),
+            card("Métricas"),
             uc_graph_map(id = ns("map")),
-            card(
-                card_header("Métricas de modelamiento"),
-                card_body(reactableOutput(outputId = ns("table"))),
-                card_body(verbatimTextOutput(outputId = ns("pruebas")))
-            ),
+            uc_table(id = ns("table")),
             col_widths = breakpoints(
                 sm = 12,
                 md = 12,
-                lg = c(12, 5, 7)
-            )
+                lg = c(10, 2, 5, 7)
+            ),
+            row_heights = c(6)
         ),
         fillable = TRUE
     )
@@ -83,7 +81,7 @@ sp_frcst <- function(id,
 
             # Base de modelamiento
             db_model <- eventReactive(input$run, {
-                var_dist$data()
+                var_dist$data() |> collect()
             })
 
             # Base del mapa

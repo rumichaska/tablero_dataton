@@ -41,15 +41,14 @@ uc_graph_single <- function(id,
 
     # echarts4rOutput del card_body
     echart_component <- card_body(
-        echarts4rOutput(outputId = ns("echart"), height = 625)
+        echarts4rOutput(outputId = ns("echart"))
     )
 
     # UI
     if (is.null(sb)) {
         card(
             echart_component,
-            full_screen = TRUE,
-            max_height = 625
+            full_screen = TRUE
         )
     } else {
         card(
@@ -59,8 +58,7 @@ uc_graph_single <- function(id,
                 gap = 0,
                 padding = 0
             ),
-            full_screen = TRUE,
-            max_height = 625
+            full_screen = TRUE
         )
     }
 }
@@ -107,7 +105,8 @@ sc_graph_model <- function(id,
             # Gráfico
             grp <- eventReactive(data(), {
                 data() |>
-                    e_charts(x = semana) |>
+                    group_by(fuente) |>
+                    e_charts(x = axis) |>
                     e_title(
                         g_title(),
                         textStyle = list(
@@ -116,7 +115,7 @@ sc_graph_model <- function(id,
                         )
                     ) |>
                     e_title(
-                        subtext = "Centro Nacional de Epidemiología, Prevención y Control de Enfermedades - MINSA",
+                        subtext = "Dataton - MINSA",
                         subtextStyle = list(
                             fontStyle = "italic",
                             fontWeight = "normal",
@@ -127,7 +126,7 @@ sc_graph_model <- function(id,
                     ) |>
                     e_legend(
                         top = 30,
-                        selected = list("Acumulado" = FALSE),
+                        # selected = list("Acumulado" = FALSE),
                         textStyle = list(
                             fontWeight = "normal",
                             fontSize = 10 + font_size
@@ -136,7 +135,7 @@ sc_graph_model <- function(id,
                     e_grid(
                         left = "5%",
                         top = 80,
-                        # right = "7%",
+                        right = "7%",
                         bottom = 60
                     ) |>
                     e_x_axis(
@@ -173,29 +172,29 @@ sc_graph_model <- function(id,
                         )
                     ) |>
                     e_line(
-                        name = "Notificación",
-                        serie = q_cne_not,
+                        name = "Casos",
+                        serie = casos,
                         itemStyle = list(color = "#000000")
                     ) |>
                     e_line(
-                        name = "Acumulado",
-                        serie = q_cne_cum,
+                        name = "Pronóstico",
+                        serie = pronostico,
                         itemStyle = list(color = "#E74C3C")
                     ) |>
-                    e_mark_line(
-                        silent = TRUE,
-                        label = list(
-                            color = "inherit",
-                            fontWeight = "normal",
-                            fontSize = 10 + font_size
-                        ),
-                        data = list(
-                            xAxis = as.character(week()),
-                            lineStyle = list(color = "#0F4164")
-                        ),
-                        title = "Semana de\nAnálisis",
-                        animation = FALSE
-                    ) |>
+                    # e_mark_line(
+                    #     silent = TRUE,
+                    #     label = list(
+                    #         color = "inherit",
+                    #         fontWeight = "normal",
+                    #         fontSize = 10 + font_size
+                    #     ),
+                    #     data = list(
+                    #         xAxis = as.character(week()),
+                    #         lineStyle = list(color = "#0F4164")
+                    #     ),
+                    #     title = "Semana de\nAnálisis",
+                    #     animation = FALSE
+                    # ) |>
                     e_toolbox_feature(feature = "saveAsImage", title = "png")
             })
 
@@ -226,12 +225,10 @@ sc_graph_map <- function(id,
             # Gráfico
             grp <- eventReactive(data(), {
                 # Información de ingreso
-                s_depa <- data()$s_depa
                 s_prov <- data()$s_prov
                 s_dist <- data()$s_dist
 
                 # Registro de mapa en formato json
-                json_depa <- geojsonio::geojson_list(s_depa)
                 json_prov <- geojsonio::geojson_list(s_prov)
                 json_dist <- geojsonio::geojson_list(s_dist)
 
