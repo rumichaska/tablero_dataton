@@ -104,6 +104,32 @@ sp_frcst <- function(id,
                 )
             })
 
+            # Base de la tabla
+            db_table <- eventReactive(input$run, {
+                # Selección de variables
+                db <- db_model() |>
+                    select(
+                        ubigeo,
+                        departamento,
+                        provincia,
+                        distrito,
+                        ano = year,
+                        semana = epiweek,
+                        casos,
+                        pronostico,
+                        fuente
+                    )
+                # Salidas
+                return(db)
+            })
+
+            ## Gráfico de modelamiento ----
+            sc_graph_model(
+                id = "model",
+                data = db_model,
+                font_size = 0
+            )
+
             ## Mapa de ubicación ----
             sc_graph_map(
                 id = "map",
@@ -111,15 +137,15 @@ sp_frcst <- function(id,
                 font_size = 0
             )
 
-            ## Tabla de resumen ----
-            output$table <- renderReactable({
-                db_model() |>
-                    collect() |>
-                    reactable()
-            })
+            ## Tablas de resumen ----
+            sc_table(
+                id = "table",
+                data = db_table,
+                font_size = 0
+            )
 
             ## TEST ----
-            output$pruebas <- renderPrint(db_map())
+            # output$pruebas <- renderPrint(db_map())
         }
     )
 }
