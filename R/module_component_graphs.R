@@ -454,7 +454,7 @@ sc_graph_map <- function(id,
                         ),
                         orient = "horizontal",
                         left = "center",
-                        top = 50,
+                        bottom = 30,
                         textStyle = list(
                             fontWeight = "normal",
                             fontSize = 10 + font_size

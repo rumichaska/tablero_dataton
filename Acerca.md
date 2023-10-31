@@ -19,7 +19,7 @@ Se seleccionaron 10 distritos del departamento de **PIURA**:
 
 #### Límites departamentales, provinciales y distritales
 
-La información de los límites distritales se obtuvo del [portal de datos abiertos](https://www.datosabiertos.gob.pe/dataset/limites-departamentales), esta base de datos se encuentra disponible en formato **`shapefile`**. A partir de los límites distritales y usando el *software* **QGIS**, se generaron las capas vectoriales de los departamentos y provincias. Finalmente, se exportó la *geodatabse* en formato **`GeoPackage`**.
+La información de los límites distritales se obtuvo del [portal de datos abiertos](https://www.datosabiertos.gob.pe/dataset/limites-departamentales), esta base de datos se encuentra disponible en formato **`shapefile`**. A partir de los límites distritales y usando el *software* **QGIS**, se generaron las capas vectoriales de los departamentos y provincias. Finalmente, se exportó la *geodatabse* en formato **`GeoPackage`** y el listado de ubigeos en formato **`rds`**.
 
 #### Datos epidemiológicos
 
