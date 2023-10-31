@@ -1,5 +1,6 @@
 # LIBRERIAS ----
 
+library(stringr)
 library(arrow, warn.conflicts = FALSE)
 library(lubridate, warn.conflicts = FALSE)
 library(readr)
@@ -69,7 +70,19 @@ db_model_clean <- db_model |>
 
 db_metric_clean <- db_metric |>
     left_join(db_ubigeo, by = join_by(ubigeo)) |>
-    select(-ano_ref)
+    select(-ano_ref) |>
+    mutate(
+        variable = case_when(
+            str_detect(variable, "^n_") ~ "Casos",
+            str_detect(variable, "tmean_") ~ "Temperatura media",
+            str_detect(variable, "tmax_") ~ "Temperatura máxima",
+            str_detect(variable, "tmin_") ~ "Temperatura mínima",
+            str_detect(variable, "prcp_") ~ "Precipitación",
+            str_detect(variable, "rdiu_") ~ "Radiación diurna",
+            str_detect(variable, "hrel_") ~ "Humedad relativa"
+        )
+    )
+
 
 # EXPORTACION ----
 write_parquet(db_model_clean, "./data/processed/shiny_data.parquet")
