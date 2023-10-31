@@ -54,8 +54,7 @@ sc_table <- function(id,
                     borderColor = c_theme[["primary"]],
                     fontWeight = "bold"
                 ),
-                style = list(fontSize = 12 + font_size),
-                searchInputStyle = list(width = "100%")
+                style = list(fontSize = 12 + font_size)
             )
 
             # Personalización de columnas y valores
@@ -92,7 +91,6 @@ sc_table <- function(id,
                         showPageSizeOptions = TRUE,
                         pageSizeOptions = c(25, 50, 100),
                         defaultPageSize = 50,
-                        searchable = TRUE,
                         resizable = TRUE,
                         language = reactableLang(
                             searchPlaceholder = "Buscar...",

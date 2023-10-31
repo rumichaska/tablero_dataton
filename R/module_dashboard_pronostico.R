@@ -143,6 +143,7 @@ sp_frcst <- function(id,
                 # Selección de variables
                 db <- var_dist$data() |>
                     collect() |>
+                    arrange(axis) |>
                     select(
                         ubigeo,
                         departamento,
