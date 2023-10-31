@@ -63,3 +63,24 @@ Proyecto de desarrollo del tablero interactivo de Dataton, MINSA 2023.
 └── README.md
 
 ```
+
+## Procesos
+
+### PASO 0: Activar entorno de desarrollo
+
+El proyecto usa `renv@1.0.3` para la gestión de los paquetes. La primera vez que se clone el proyecto se iniciará la sincronización de paquetes. Para instalar por primera vez los paquetes usar el siguiente comando en la consola de `R`:
+
+```r
+renv::restore()
+```
+
+Este comando se inicia la instalación de los paquetes y versiones con los que fue desarrollado el proyecto.
+
+Consideraciones:
+
+- El proyecto está desarrollado en la versión `R 4.2.2`, si se cuenta con otra versión de `R` es posible que se generen problemas a la hora de instalar los paquetes desde `renv`. Se recomienda cambiar la versión de `R` (esto se puede hacer fácilmente desde **RStudio**) o, en su defecto, borrar el directorio `renv/` y los archivos `.Rprofile` y `renv.lock`, de esta manera se hará uso de los paquetes instalados de forma local en nuestro equipo.
+- Antes de eliminar los archivos relacionadas a `renv` es importante tener en cuenta que las versiones de los paquetes que se instalan en el sistema no corresponden, necesariamente, a las versiones con los que se desarrolló el aplicativo. Para evitar posibles errores, el archivo `renv.lock` contiene las versiones de los paquetes utilizados al momento de desarrollar el aplicativo.
+
+### PASO 1. Generación de base de datos del aplicativo
+
+La generación de la base de datos que alimenta el tablero interactivo se genera a partir del archivo `src/generar_data_shiny.R`. Como *input* se utilizan las bases resultantes del modelamiento, ubicadas en la carpeta `data/raw/`.
