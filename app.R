@@ -32,7 +32,10 @@ if (wday(fecha_actual) <= 3) {
 }
 
 # Tema app
-app_theme <- bs_theme(bootswatch = "litera")
+app_theme <- bs_theme(
+    pink = "#F1C1C0",
+    bootswatch = "litera"
+)
 
 # UI ----
 

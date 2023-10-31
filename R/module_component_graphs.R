@@ -365,7 +365,7 @@ sc_graph_map <- function(id,
             # Tema del aplicativo
             c_theme <- bs_get_variables(
                 theme = bs_current_theme(),
-                varnames = c("white", "gray-500", "danger")
+                varnames = c("gray-100", "pink", "danger")
             )
 
             # Gráfico
@@ -434,7 +434,6 @@ sc_graph_map <- function(id,
                         roam = FALSE,
                         aspectScale = 1,
                         nameProperty = "l_distrito",
-                        selectedMode = FALSE,
                         emphasis = list(
                             label = list(show = FALSE),
                             itemStyle = list(
@@ -449,11 +448,17 @@ sc_graph_map <- function(id,
                         serie = value,
                         type = "piecewise",
                         pieces = list(
-                            list(value = 0, color = c_theme[[1]]),
-                            list(value = 1, color = c_theme[[2]]),
-                            list(value = 2, color = c_theme[[3]])
+                            list(value = 0, label = "No modelado", color = c_theme[[1]]),
+                            list(value = 1, label = "Modelado", color = c_theme[[2]]),
+                            list(value = 2, label = "Seleccionado", color = c_theme[[3]])
                         ),
-                        show = FALSE
+                        orient = "horizontal",
+                        left = "center",
+                        top = 50,
+                        textStyle = list(
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        )
                     ) |>
                     e_map_register(name = "provincia", json = json_prov) |>
                     e_map(
