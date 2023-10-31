@@ -43,8 +43,6 @@ rsconnect/
 !/data/processed/README.md
 /data/raw/*
 !/data/raw/README.md
-/data/geo/*
-!/data/geo/README.md
 /output/*
 !/output/README.md
 
