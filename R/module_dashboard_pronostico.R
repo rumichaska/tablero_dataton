@@ -40,8 +40,10 @@ up_frcst <- function(id) {
             uc_graph_single(
                 id = ns("metrics"),
                 sb = "Nota:",
-                sn = "El número que acompaña a la variable - por ejemplo: Casos (4) -
-                se refiere a el número de semanas de retraso."
+                sn = "El número que acompaña a la variable se refiere al número 
+                de semanas de retraso. Por ejemplo: en Casos (4) se tomó en cuenta
+                el número de casos de hace 4 semanas para predecir el número de
+                casos actual"
             ),
             uc_graph_map(id = ns("map")),
             uc_table(id = ns("table")),
