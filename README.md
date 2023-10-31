@@ -25,9 +25,6 @@ Proyecto de desarrollo del tablero interactivo de Dataton, MINSA 2023.
 │   │   ├── chulucanas_test.csv
 │   │   ├── chulucanas_train.csv
 │   │   ├── chulucanas_variables.csv
-│   │   ├── el_alto_test.csv
-│   │   ├── el_alto_train.csv
-│   │   ├── el_alto_variables.csv
 │   │   ├── la_matanza_test.csv
 │   │   ├── la_matanza_train.csv
 │   │   ├── la_matanza_variables.csv
