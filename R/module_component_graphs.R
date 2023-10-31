@@ -376,7 +376,7 @@ sc_graph_map <- function(id,
             # Tema del aplicativo
             c_theme <- bs_get_variables(
                 theme = bs_current_theme(),
-                varnames = c("white", "danger")
+                varnames = c("white", "gray-500", "danger")
             )
 
             # Gráfico
@@ -393,7 +393,7 @@ sc_graph_map <- function(id,
                 g_title <- eventReactive(data(), {
                     d <- s_dist |>
                         as.data.frame() |>
-                        filter(value == 1) |>
+                        filter(value == 2) |>
                         pull(distrito)
                     t <- "Mapa de ubicación"
                     s <- glue("Distrito: {d}")
@@ -461,7 +461,8 @@ sc_graph_map <- function(id,
                         type = "piecewise",
                         pieces = list(
                             list(value = 0, color = c_theme[[1]]),
-                            list(value = 1, color = c_theme[[2]])
+                            list(value = 1, color = c_theme[[2]]),
+                            list(value = 2, color = c_theme[[3]])
                         ),
                         show = FALSE
                     ) |>
