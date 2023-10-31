@@ -64,7 +64,10 @@ ui <- page_navbar(
     padding = 0,
     bg = bs_get_variables(app_theme, "primary"),
     inverse = TRUE,
-    theme = app_theme
+    theme = bs_add_rules(
+        theme = app_theme,
+        rules = sass::sass_file("./www/styles.scss")
+    )
 )
 
 # SERVER ----

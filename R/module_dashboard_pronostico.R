@@ -31,12 +31,18 @@ up_frcst <- function(id) {
                 icon = icon("cog"),
                 class = "btn btn-outline-success"
             ),
+            # verbatimTextOutput(ns("pruebas")),
             gap = 3
         ),
         # Main panel
         layout_columns(
             uc_graph_single(id = ns("model")),
-            uc_graph_single(id = ns("metrics")),
+            uc_graph_single(
+                id = ns("metrics"),
+                sb = "Nota:",
+                sn = "El número que acompaña a la variable - por ejemplo: Casos (4) -
+                se refiere a el número de semanas de retraso."
+            ),
             uc_graph_map(id = ns("map")),
             uc_table(id = ns("table")),
             col_widths = breakpoints(
@@ -211,7 +217,7 @@ sp_frcst <- function(id,
             )
 
             ## TEST ----
-            output$pruebas <- renderPrint(db_model())
+            output$pruebas <- renderPrint(db_map())
         }
     )
 }

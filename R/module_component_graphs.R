@@ -5,36 +5,25 @@
 #' Interface de gráfico individual
 #'
 #' @param id Identificador del módulo
-#' @param sb Parámetro {choices} del `radioButtons()` del `sidebar()` del
-#' módulo, debe ser ingresado como: `c("etiqueta1" = 1, "etiqueta2" = 2, ...)`
-#' @param sl Parámetro {label} del `radioButtons()` del `sidebar()`
-#' @param sd Parámetro de la opción seleccionada por defecto del `radioButtons()`
-#' del `sidebar()` del módulo
+#' @param sb Parámetro para mostrar el `sidebar()`
 #' @param sn Contenido de las notas del `sidebar()`
 #' @return Card del gráfico
 uc_graph_single <- function(id,
                             sb = NULL,
-                            sl = NULL,
-                            sd = 1,
                             sn = NULL) {
     # Namespace
     ns <- NS(id)
 
     # Tema del aplicativo
-    c_theme <- bs_get_variables(bs_theme(), "gray-800")
+    c_theme <- bs_get_variables(bs_theme(), "default")
 
     # sidebar del card
     if (!is.null(sb)) {
         sidebar_component <- sidebar(
-            radioButtons(
-                inputId = ns("sb_toggle"),
-                label = NULL,
-                choices = sb,
-                selected = sd,
-            ),
-            span(bs_icon("info-circle"), sn, class = "note-content"),
+            span(sn, class = "note-content"),
+            width = 200,
             open = FALSE,
-            title = sl,
+            title = sb,
             bg = c_theme[[1]]
         )
     }
