@@ -4,16 +4,17 @@
 
 Se seleccionaron 10 distritos del departamento de **PIURA**:
 
-1. Buenos Aires, Morropón, Piura (ubigeo: )
-2. Castilla, Piura, Piura (ubigeo: )
-3. Chulucanas, Morropón, Piura (ubigeo: )
-4. La Matanza, Morropón, Piura (ubigeo: )
-5. Los Órganos, Talara, Piura (ubigeo: )
-6. Morropón, Morropón, Piura (ubigeo: )
-7. Máncora, Talara, Piura (ubigeo: )
-8. Piura, Piura, Piura (ubigeo: )
-9. Salitral, Morropón, Piura (ubigeo: )
-10. Sullana, Sullana, Piura (ubigeo: )
+1. Buenos Aires, Morropón, Piura (ubigeo: 200402)
+2. Castilla, Piura, Piura (ubigeo: 200104)
+3. Chulucanas, Morropón, Piura (ubigeo: 200401)
+4. El Alto, Talara, Piura (ubigeo: 200702)
+5. La Matanza, Morropón, Piura (ubigeo: 200404)
+6. Los Órganos, Talara, Piura (ubigeo: 200705)
+7. Morropón, Morropón, Piura (ubigeo: 200405)
+8. Máncora, Talara, Piura (ubigeo: 200706)
+9. Piura, Piura, Piura (ubigeo: 200101)
+10. Salitral, Morropón, Piura (ubigeo: 200406)
+11. Sullana, Sullana, Piura (ubigeo: 200601)
 
 ### Fuentes de información
 
