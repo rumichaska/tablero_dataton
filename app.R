@@ -48,7 +48,7 @@ ui <- page_navbar(
             col_widths = c(-2, 8),
             withMathJax(includeMarkdown("./Acerca.md"))
         ),
-        title = "Acerca",
+        title = "Materiales y Métodos",
         icon = bs_icon("info-circle-fill")
     ),
     # Github
@@ -62,11 +62,9 @@ ui <- page_navbar(
     ),
     title = "DENGUE DATATON",
     padding = 0,
-    inverse = FALSE,
-    theme = bs_add_rules(
-        theme = app_theme,
-        sass::sass_file("./www/styles.scss")
-    )
+    bg = bs_get_variables(app_theme, "primary"),
+    inverse = TRUE,
+    theme = app_theme
 )
 
 # SERVER ----
@@ -93,7 +91,7 @@ server <- function(input, output, session) {
         )
     })
 
-    ## Dashboard: Diresa ----
+    ## Dashboard: Modelamiento ----
     sp_frcst(id = "forecast", data = db, metrics = mt, shp = shp)
 }
 
