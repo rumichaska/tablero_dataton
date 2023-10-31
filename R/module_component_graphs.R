@@ -135,7 +135,7 @@ sc_graph_model <- function(id,
                     e_grid(
                         left = "5%",
                         top = 80,
-                        bottom = 60
+                        bottom = 90
                     ) |>
                     e_x_axis(
                         type = "category",
@@ -156,6 +156,10 @@ sc_graph_model <- function(id,
                     ) |>
                     e_y_axis(
                         name = "Casos",
+                        nameTextStyle = list(
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        ),
                         axisLine = list(show = TRUE),
                         axisTick = list(show = TRUE),
                         axisLabel = list(
@@ -174,37 +178,61 @@ sc_graph_model <- function(id,
                     e_line(
                         serie = casos_test,
                         name = "Casos test",
-                        itemStyle = list(color = c_theme[[1]])
+                        symbol = "none",
+                        itemStyle = list(color = c_theme[[1]]),
+                        emphasis = list(
+                            focus = "series",
+                            blur = "coordinateSystem"
+                        )
                     ) |>
                     e_line(
                         serie = casos_train,
                         name = "Casos train",
-                        itemStyle = list(color = c_theme[[2]])
+                        symbol = "none",
+                        itemStyle = list(color = c_theme[[2]]),
+                        emphasis = list(
+                            focus = "series",
+                            blur = "coordinateSystem"
+                        )
                     ) |>
                     e_line(
                         serie = pronostico_test,
                         name = "Pronóstico test",
-                        itemStyle = list(color = c_theme[[3]])
+                        symbol = "none",
+                        itemStyle = list(color = c_theme[[3]]),
+                        emphasis = list(
+                            focus = "series",
+                            blur = "coordinateSystem"
+                        )
                     ) |>
                     e_line(
                         serie = pronostico_train,
                         name = "Pronóstico train",
-                        itemStyle = list(color = c_theme[[4]])
+                        symbol = "none",
+                        itemStyle = list(color = c_theme[[4]]),
+                        emphasis = list(
+                            focus = "series",
+                            blur = "coordinateSystem"
+                        )
                     ) |>
                     e_mark_line(
                         silent = TRUE,
+                        symbol = "none",
                         label = list(
                             color = "inherit",
                             fontWeight = "normal",
                             fontSize = 10 + font_size
                         ),
+                        lineStyle = list(width = 2),
                         data = list(
                             xAxis = data()$cut,
                             lineStyle = list(color = c_theme[[5]])
                         ),
-                        title = "Corte",
+                        title = "<- Train |  Test ->",
                         animation = FALSE
                     ) |>
+                    e_datazoom(x_index = 0, bottom = 25, height = 25) |>
+                    e_toolbox_feature(feature = "dataZoom", show = FALSE) |>
                     e_toolbox_feature(feature = "saveAsImage", title = "png")
             })
 
@@ -241,7 +269,7 @@ sc_graph_metrics <- function(id,
             g_title <- eventReactive(data(), {
                 d <- unique(data()$modelo)
                 t <- "Importancia de las variables"
-                s <- glue("Modelo usado: {d}")
+                s <- glue("Modelo elegido: {d}")
                 # Salidas
                 list(title = t, subtitle = s)
             })
@@ -289,6 +317,11 @@ sc_graph_metrics <- function(id,
                         splitLine = list(show = FALSE)
                     ) |>
                     e_y_axis(
+                        name = "Score",
+                        nameTextStyle = list(
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        ),
                         axisLabel = list(
                             fontWeight = "normal",
                             fontSize = 10 + font_size
@@ -370,7 +403,7 @@ sc_graph_map <- function(id,
 
                 # Ploteo
                 g <- s_dist |>
-                    e_charts(x = distrito) |>
+                    e_charts(x = l_distrito) |>
                     e_title(
                         text = g_title()$title,
                         subtext = g_title()$subtitle,
@@ -411,7 +444,7 @@ sc_graph_map <- function(id,
                         map = "distrito",
                         roam = FALSE,
                         aspectScale = 1,
-                        nameProperty = "distrito",
+                        nameProperty = "l_distrito",
                         selectedMode = FALSE,
                         emphasis = list(
                             label = list(show = FALSE),

@@ -126,7 +126,10 @@ sp_frcst <- function(id,
                 s_prov <- shp()$s_prov |> filter(departamen == f_depa)
                 s_dist <- shp()$s_dist |>
                     filter(departamen == f_depa) |>
-                    mutate(value = if_else(distrito == f_dist, 1, 0))
+                    mutate(
+                        value = if_else(provincia == f_prov & distrito == f_dist, 1, 0),
+                        l_distrito = glue("{distrito} ({ubigeo})")
+                    )
                 # Salidas
                 list(
                     s_depa = s_depa,
