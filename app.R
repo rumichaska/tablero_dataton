@@ -52,7 +52,7 @@ ui <- page_navbar(
             class = "p-0",
         )
     ),
-    title = "DENGUE DATATON",
+    title = "PRONÓSTICO DE CASOS DE DENGUE",
     padding = 0,
     bg = bs_get_variables(app_theme, "primary"),
     inverse = TRUE,
