@@ -70,9 +70,13 @@ sc_table <- function(id,
                 distrito = colDef(name = "Distrito"),
                 ano = colDef(name = "Año", filterable = TRUE),
                 semana = colDef(name = "Semana epidemiológica", filterable = TRUE),
-                casos = colDef(name = "Casos"),
-                pronostico = colDef(name = "Pronóstico"),
-                fuente = colDef(name = "Fuente", filterable = TRUE)
+                casos = colDef(
+                    name = "Casos obsevados",
+                    style = list(borderRight = "1px solid"),
+                    headerStyle = list(borderRight = "1px solid")
+                ),
+                pronostico = colDef(name = "Casos esperados"),
+                fuente = colDef(name = "Tipo", filterable = TRUE)
             )
 
             # Tabla de resumen

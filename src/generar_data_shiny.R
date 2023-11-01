@@ -33,6 +33,7 @@ db_ubigeo <- readRDS("./data/geo/ubigeo_18.rds")
 # Listado de archivos de modelamiento
 test_files <- list.files(path = "./data/raw", pattern = "test.csv", full.names = TRUE)
 train_files <- list.files(path = "./data/raw", pattern = "train.csv", full.names = TRUE)
+pronostic_files <- list.files(path = "./data/raw", pattern = "pronostic.csv", full.names = TRUE)
 metric_files <- list.files(path = "./data/raw", pattern = "variables.csv", full.names = TRUE)
 
 # Union de archivos
@@ -46,6 +47,14 @@ for (file in train_files) {
     db_in <- read_csv_arrow(file) |> clean_ubigeo("train")
     db_train <- rbind(db_train, db_in)
 }
+db_pronostic <- c()
+for (file in pronostic_files) {
+    db_in <- read_csv_arrow(file) |>
+        clean_ubigeo("forecast") |>
+        mutate(casos = 0) |>
+        relocate(casos, .before = pronostico)
+    db_pronostic <- rbind(db_pronostic, db_in)
+}
 db_metric <- c()
 for (file in metric_files) {
     db_in <- read_csv_arrow(file) |> clean_ubigeo()
@@ -53,7 +62,7 @@ for (file in metric_files) {
 }
 
 # Union de bases de entrenamiento y validación
-db_model <- rbind(db_test, db_train)
+db_model <- rbind(db_test, db_train, db_pronostic)
 
 # DATA WRANGLING ----
 

@@ -204,6 +204,16 @@ sc_graph_model <- function(id,
                             blur = "coordinateSystem"
                         )
                     ) |>
+                    e_line(
+                        serie = pronostico_forecast,
+                        name = "Pronóstico forecast",
+                        symbol = "none",
+                        itemStyle = list(color = c_theme[[5]]),
+                        emphasis = list(
+                            focus = "series",
+                            blur = "coordinateSystem"
+                        )
+                    ) |>
                     e_mark_line(
                         silent = TRUE,
                         symbol = "none",
@@ -214,13 +224,29 @@ sc_graph_model <- function(id,
                         ),
                         lineStyle = list(width = 2),
                         data = list(
-                            xAxis = data()$cut,
-                            lineStyle = list(color = c_theme[[5]])
+                            xAxis = data()$cut_t,
+                            lineStyle = list(color = c_theme[[4]])
                         ),
                         title = "<- Train |  Test ->",
                         animation = FALSE
                     ) |>
-                    e_datazoom(x_index = 0, bottom = 25, height = 25) |>
+                    e_mark_line(
+                        silent = TRUE,
+                        symbol = "none",
+                        label = list(
+                            color = "inherit",
+                            fontWeight = "normal",
+                            fontSize = 10 + font_size
+                        ),
+                        lineStyle = list(width = 2),
+                        data = list(
+                            xAxis = data()$cut_f,
+                            lineStyle = list(color = c_theme[[4]])
+                        ),
+                        title = "                   | Forecast ->",
+                        animation = FALSE
+                    ) |>
+                    e_datazoom(x_index = 0, bottom = 25, height = 25, startValue = data()$cut_t) |>
                     e_toolbox_feature(feature = "dataZoom", show = FALSE) |>
                     e_toolbox_feature(feature = "saveAsImage", title = "png")
             })

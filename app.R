@@ -20,17 +20,6 @@ library(shiny)
 
 # GLOBALES ----
 
-# Parámetros de entrada
-fecha_actual <- Sys.Date()
-year <- year(fecha_actual)
-
-# Cálculo de semana de análisis
-# week <- 33
-week <- epiweek(fecha_actual) - 1
-if (wday(fecha_actual) <= 3) {
-    week <- week - 1
-}
-
 # Tema app
 app_theme <- bs_theme(
     pink = "#F1C1C0",

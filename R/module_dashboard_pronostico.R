@@ -96,9 +96,11 @@ sp_frcst <- function(id,
                 # Información
                 db_in <- var_dist$data() |>
                     collect()
-                # Semana de corte de train | test
-                date <- max(db_in$fecha[db_in$fuente == "train"], na.rm = TRUE)
-                c <- paste(epiyear(date), epiweek(date), sep = "-")
+                # Semana de corte de train | test | forecast
+                date_t <- max(db_in$fecha[db_in$fuente == "train"], na.rm = TRUE)
+                date_f <- max(db_in$fecha[db_in$fuente == "test"], na.rm = TRUE)
+                c_t <- paste(epiyear(date_t), epiweek(date_t), sep = "-")
+                c_f <- paste(epiyear(date_f), epiweek(date_f), sep = "-")
                 # Formato ancho
                 db <- db_in |>
                     tidyr::pivot_wider(
@@ -106,7 +108,7 @@ sp_frcst <- function(id,
                         values_from = c(casos, pronostico)
                     )
                 # Salidas
-                list(data = db, cut = c)
+                list(data = db, cut_t = c_t, cut_f = c_f)
             })
 
             # Base de métricas del modelamiento
@@ -157,7 +159,7 @@ sp_frcst <- function(id,
                 # Selección de variables
                 db <- var_dist$data() |>
                     collect() |>
-                    arrange(axis) |>
+                    arrange(desc(axis)) |>
                     select(
                         ubigeo,
                         departamento,
@@ -219,7 +221,7 @@ sp_frcst <- function(id,
             )
 
             ## TEST ----
-            output$pruebas <- renderPrint(db_map())
+            output$pruebas <- renderPrint(db_model())
         }
     )
 }
